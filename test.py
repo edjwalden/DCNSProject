@@ -95,7 +95,7 @@ def DefaultWindow():
     window.Close()
 '''
 
-### LOGIN window ###
+### LOGIN window ####
 def Main():
     menu_def = [['File',['Open Folder Location','Open Accounts CSV','Open Tickets CSV']]]
 
