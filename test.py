@@ -53,16 +53,16 @@ accounttabledata = []
 accountableheaders = ['Username', 'Password', 'Privilege']
 
 def RefreshAccountTable():
-    with open('accounts.csv','r') as accountsfile: # REFRESHES ACCOUNTS TABLE DATA
-        accounttabledata.clear()                
+    with open('accounts.csv','r') as accountsfile: # REFRESHES INTERNAL ACCOUNTS TABLE DATA
+        accounttabledata.clear()                   
         reader = csv.reader(accountsfile)
         for row in reader:
             accounttabledata.append(row)
 
 def RewriteTicketCSV(CaseDetails, caseid):
-    with open('tickets.csv', 'w', newline='') as ticketfile: # Appends the ticket CSV 
+    with open('tickets.csv', 'w', newline='') as ticketfile: # Rewrites the ticket CSV with one row changed
         writer = csv.writer(ticketfile)
-        for row in tickettabledata:                          # Rewrites the whole CSV
+        for row in tickettabledata:                          # Rewrites the whole CSV line by line
             if int(row[0])-1 == caseid:                      # If ID = current ticket, writes current ticket's details to CSV row.
                 writer.writerow(CaseDetails)                
             else:
@@ -99,14 +99,13 @@ def DefaultWindow():
 def Main():
     menu_def = [['File',['Open Folder Location','Open Accounts CSV','Open Tickets CSV']]]
 
-
     layout = [[sg.Menu(menu_definition=menu_def, key='k')],
-              [sg.Text('Please enter your details')],
-              [sg.Text('Username'), sg.Stretch(), sg.Input(key='-USERNAME-',size=(30,1))],
-              [sg.Text('Password'), sg.Stretch(), sg.Input(key='-PASSWORD-',size=(30,1))],
+              [sg.Stretch(),sg.Text('Please enter your details:'),sg.Stretch()],
+              [sg.Text('Username',pad=0), sg.Stretch(), sg.Input(key='-USERNAME-',size=(30,1))],
+              [sg.Text('Password',pad=0), sg.Stretch(), sg.Input(key='-PASSWORD-',size=(30,1))],
               [sg.Button('Login', key='-LOGIN-'), sg.Button('Admin Login', key='-ADMINLOGIN-'), sg.Stretch(), sg.Button('Create Account', key='-CREATE-')]
             ]
-
+    
     window = sg.Window('Login', layout)
 
     while True:
@@ -118,11 +117,11 @@ def Main():
             global password
             username = str(values['-USERNAME-'])
             password = str(values['-PASSWORD-'])
-            with open('accounts.csv', 'r') as accountsfile:
+            with open('accounts.csv', 'r') as accountsfile:       # Compares entered credentials to account CSV file
                 reader = csv.reader(accountsfile)
                 for row in reader:
                     if row[0] == username and row[1] == password: # Checks all rows in csv file, if username and password match, condition is true.
-                        global userprivilege
+                        global userprivilege                      # Establishes privilege for the user globally.
                         userprivilege = row[2]
                         window.Close()
                         OptionWindow(username, userprivilege)
@@ -143,8 +142,8 @@ def Main():
 ### SPLASH/HOME SCREEN ###
 ### Takes args from Main() ###
 def OptionWindow(Username,UserPriv):
-    match UserPriv:
-        case "User":
+    match UserPriv:                         ## Defines layouts depending on privilege
+        case "User":                        
             layout = [[sg.Text('Hello, ' + Username + ", your privilege is " + UserPriv)],
                       [sg.Button('Create Ticket', key='-NEWTICKET-')],
                       [sg.Button('Manage Tickets', key='-MANAGETICKET-')],
@@ -190,7 +189,7 @@ def OptionWindow(Username,UserPriv):
 def CreateAccountPage():
     layout = [[sg.Text('New Username: '), sg.Stretch(), sg.Input(key='-NEWUSER-', size= (30,1))],
               [sg.Text('New Password: '), sg.Stretch(),sg.Input(key='-NEWPASS-', size= (30,1))],
-              [sg.Button('Create account', key='-CREATEACCOUNT-'), sg.Text('', key='-CONFIRM-'), sg.Stretch(), sg.DropDown(values=('User','Technician','Admin'),key='-PRIVILEGE-', size= (9,1), default_value="User")],
+              [sg.Button('Create account', key='-CREATEACCOUNT-'), sg.Text('', key='-CONFIRM-'), sg.Stretch(), sg.DropDown(values=('User','Technician','Admin'),key='-PRIVILEGE-', size= (9,1), default_value="User",readonly=True)],
               [sg.Stretch(),sg.Button('Back')]
               ]
 
@@ -371,7 +370,7 @@ def ControlTicket(caseid):
                 [sg.Button('Save', key='-SAVE-'), sg.Button('Save and exit', key='-SAVEANDEXIT-'), sg.Stretch(), sg.Button('Back',key='-BACK-')]
                 ]
                
-    window = sg.Window('Edit Ticket', layout) 
+    window = sg.Window('Edit Ticket', layout, size=(500,350)) 
 
     while True:
         event, values = window.read()
@@ -419,12 +418,12 @@ def NewTicket():
 
     NewTicketID = len(tickettabledata) + 1
     layout = [[sg.Text("Ticket ID: " + str(NewTicketID))],
-              [sg.Text("Issue Type: "), sg.Stretch(), sg.DropDown(values=("Hardware", "Software", "Other"), key='-ISSUETYPE-')],
-              [sg.Text("Division: "), sg.Stretch(), sg.DropDown(values=("Finance", "Acquisitions", "IT", "Recruitment", "HR"), key='-DIVISION-')],
+              [sg.Text("Issue Type: "), sg.Stretch(), sg.DropDown(values=("Hardware", "Software", "Other"), key='-ISSUETYPE-', readonly=True)],
+              [sg.Text("Division: "), sg.Stretch(), sg.DropDown(values=("Finance", "Acquisitions", "IT", "Recruitment", "HR"), key='-DIVISION-', readonly=True)],
               [sg.Text("Name: "), sg.Stretch(), sg.Text(username)],
-              [sg.Text("Priority: "), sg.Stretch(), sg.DropDown(values=("High", "Low"), key='-PRIORITY-')],
+              [sg.Text("Priority: "), sg.Stretch(), sg.DropDown(values=("High", "Low"), key='-PRIORITY-', readonly=True)],
               [sg.Text("Describe your issue in more detail: ", size=(40,None))],
-              [sg.Multiline(size=(35, 6),key='-DESCRIPTION-')],
+              [sg.Multiline(size=(35, 6),key='-DESCRIPTION-',)],
               [sg.Button("Submit",key='-SUBMIT-'), sg.Text('', key='-CONFIRM-'), sg.Stretch(), sg.Button('Back', key='-BACK-')]
               ] 
 
