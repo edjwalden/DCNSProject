@@ -2,7 +2,6 @@ import PySimpleGUI as sg
 import csv
 import os
 from datetime import datetime
-import subprocess
 
 '''
 ### GRABS TIME ###
