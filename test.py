@@ -10,7 +10,8 @@ currenttime = now.strftime('%d/%m/%Y at %H:%M:%S')
 '''
 
 ### Sets default directory ###
-directory = 'c:/Users/Ed/Documents/VSCODE/Tutorial/Python/Messing around/GUI/'
+#directory = 'c:/Users/Ed/Documents/VSCODE/Tutorial/Python/Messing around/GUI/'
+directory = os.path.dirname(os.path.abspath(__file__)) ## sets directory to folder containing running script file.
 os.chdir(directory)
 
 ### Creates CSV file for accounts if it does not exist ###
@@ -79,8 +80,6 @@ sg.theme_add_new('MyTheme', new_theme)
 sg.theme('MyTheme')
 themefont = ('Verdana', 10)
 sg.set_options(font=themefont)
-
-
 '''
 ### TEMPLATE for new windows ###
 def DefaultWindow():
@@ -103,7 +102,8 @@ def Main():
               [sg.Stretch(),sg.Text('Please enter your details:'),sg.Stretch()],
               [sg.Text('Username',pad=0), sg.Stretch(), sg.Input(key='-USERNAME-',size=(30,1))],
               [sg.Text('Password',pad=0), sg.Stretch(), sg.Input(key='-PASSWORD-',size=(30,1))],
-              [sg.Button('Login', key='-LOGIN-'), sg.Button('Admin Login', key='-ADMINLOGIN-'), sg.Stretch(), sg.Button('Create Account', key='-CREATE-')]
+              [sg.Button('Login', key='-LOGIN-'), sg.Button('Admin Login', key='-ADMINLOGIN-'), sg.Stretch(), sg.Button('Create Account', key='-CREATE-')],
+              [sg.Text(os.getcwd())]
             ]
     
     window = sg.Window('Login', layout)
@@ -117,7 +117,7 @@ def Main():
             global password
             username = str(values['-USERNAME-'])
             password = str(values['-PASSWORD-'])
-            with open('accounts.csv', 'r') as accountsfile:       # Compares entered credentials to account CSV file
+            with open('accounts.csv', 'r') as accountsfile:       # Compares entered credentials to account CSV file #
                 reader = csv.reader(accountsfile)
                 for row in reader:
                     if row[0] == username and row[1] == password: # Checks all rows in csv file, if username and password match, condition is true.
